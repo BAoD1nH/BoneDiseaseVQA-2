@@ -2,6 +2,7 @@ import torch
 from torch.utils.data import DataLoader, random_split
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, TrainingArguments, Trainer
 from dataset import MedicalVQADataset
+import json
 
 with open('label_map_label2idx.json', 'r', encoding='utf-8') as f:
     label2idx = json.load(f)
