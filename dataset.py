@@ -1,0 +1,83 @@
+import os
+import json
+import random
+from PIL import Image
+import torch
+from torch.utils.data import Dataset
+import csv
+
+class MedicalVQADataset(Dataset):
+    """
+    Dataset for Medical VQA: returns (pixel_values, input_ids, attention_mask, label)
+    """
+    def __init__(
+        self,
+        data_json: str,
+        questions_csv: str,
+        image_root: str,
+        tokenizer,
+        feature_extractor,
+        label2idx: dict,
+        transforms=None,
+    ):
+        super().__init__()
+        with open(data_json, 'r', encoding='utf-8') as f:
+            self.data = json.load(f)
+
+        # load questions
+        self.questions = []
+        with open(questions_csv, 'r', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                self.questions.append(row['\ufeffQuestion'])
+
+        # Print all questions
+        print("Questions:")
+        for q in self.questions:
+            print(q)
+    
+        self.image_root = image_root
+        self.tokenizer = tokenizer
+        self.feature_extractor = feature_extractor
+        self.label2idx = label2idx
+        self.transforms = transforms
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        sample = self.data[idx]
+        # load image
+        img_path = os.path.join(self.image_root, sample['image_url'])
+        # image = Image.open(img_path).convert('RGB')
+        image = None
+
+        if self.transforms:
+            pixel_values = self.transforms(image)
+        else:
+            px = self.feature_extractor(images=image, return_tensors='pt')
+            pixel_values = px.pixel_values.squeeze(0)
+
+        # random question
+        question = random.choice(self.questions)
+
+        text = self.tokenizer(
+            question,
+            padding='max_length',
+            truncation=True,
+            max_length=128,
+            return_tensors='pt'
+        )
+        input_ids = text.input_ids.squeeze(0)
+        attention_mask = text.attention_mask.squeeze(0)
+        # label
+        answer_text = f"{sample['diagnose']}, tình trạng {sample['condition']}"
+        label = self.label2idx[answer_text]
+
+        return {
+            'pixel_values': pixel_values,
+            'input_ids': input_ids,
+            'attention_mask': attention_mask,
+            'label': torch.tensor(label, dtype=torch.long)
+        }
+    
