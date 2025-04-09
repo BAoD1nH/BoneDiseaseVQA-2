@@ -73,8 +73,9 @@ class MedicalVQADataset(Dataset):
                 question,
                 padding='max_length',
                 truncation=True,
-                max_length=512,
-                return_tensors='pt'
+                max_length=128,
+                return_tensors='pt',
+                return_token_type_ids=False
             )
 
             input_ids = text.input_ids.squeeze(0)
