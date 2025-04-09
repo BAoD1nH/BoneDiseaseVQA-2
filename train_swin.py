@@ -8,7 +8,7 @@ import json
 
 feature_extractor = AutoFeatureExtractor.from_pretrained('microsoft/swinv2-base-patch4-window8-256')
 
-logging.set_verbosity_info()
+# logging.set_verbosity_info()
 
 
 with open('label_map_label2idx.json', 'r', encoding='utf-8') as f:

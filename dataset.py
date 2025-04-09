@@ -81,6 +81,7 @@ class MedicalVQADataset(Dataset):
             attention_mask = text.attention_mask.squeeze(0)
 
         answer_text = f"{sample['diagnose']}, tình trạng {sample['condition']}"
+        print(f"Answer text: {answer_text}")
 
         # if answer_text not in self.label2idx:
         #     print(f"[UNKNOWN LABEL] '{answer_text}' at index {idx}")
