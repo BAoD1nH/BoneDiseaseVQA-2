@@ -10,10 +10,10 @@ import json
 # hyperparameters
 VISION_MODEL = 'microsoft/swinv2-base-patch4-window8-256'
 TEXT_MODEL = 'vimednli/vihealthbert-w_mlm-ViMedNLI'
-BATCH_SIZE = 8
-EPOCHS = 30
+BATCH_SIZE = 32
+EPOCHS = 10
 LR = 5e-4
-PATIENCE = 5  # early stopping patience
+PATIENCE = 3  # early stopping patience
 
 # prepare label mapping
 with open('label_map_label2idx.json', 'r', encoding='utf-8') as f:
