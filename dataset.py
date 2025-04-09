@@ -61,20 +61,28 @@ class MedicalVQADataset(Dataset):
         question = random.choice(self.questions)
 
         
-        # 
-        
-        text = self.tokenizer(
-            question,
-            padding='max_length',
-            truncation=True,
-            max_length=128,
-            return_tensors='pt'
-        )
+        if self.tokenizer is None:
+            text = None
+            input_ids = None
+            attention_mask = None
+        else:
+            text = self.tokenizer(
+                question,
+                padding='max_length',
+                truncation=True,
+                max_length=512,
+                return_tensors='pt'
+            )
 
-        input_ids = text.input_ids.squeeze(0)
-        attention_mask = text.attention_mask.squeeze(0)
-        # label
+            input_ids = text.input_ids.squeeze(0)
+            attention_mask = text.attention_mask.squeeze(0)
+            
         answer_text = f"{sample['diagnose']}, tình trạng {sample['condition']}"
+
+        # if answer_text not in self.label2idx:
+        #     print(f"[UNKNOWN LABEL] '{answer_text}' at index {idx}")
+        #     raise KeyError(f"Label '{answer_text}' not found in label2idx.")
+        # else:
         label = self.label2idx[answer_text]
 
         return {
@@ -83,4 +91,25 @@ class MedicalVQADataset(Dataset):
             'attention_mask': attention_mask,
             'label': torch.tensor(label, dtype=torch.long)
         }
-    
+
+if __name__ == "__main__":
+    # Print some samples from the dataset
+    with open('label_map_label2idx.json', 'r', encoding='utf-8') as f:
+        label2idx = json.load(f)
+
+    dataset = MedicalVQADataset(
+        data_json='dataset/cleaned_output_bonedata.json',
+        questions_csv='dataset/question_bonedata.csv',
+        image_root='/kaggle/input/bonevqa/DemoBoneData',
+        tokenizer=None,
+        feature_extractor=None,
+        label2idx=label2idx
+    )
+    for i in range(5):
+        sample = dataset[i]
+        print(f"Sample {i}:")
+        print(f"Image path: {sample['pixel_values']}")
+        print(f"Input IDs: {sample['input_ids']}")
+        print(f"Attention Mask: {sample['attention_mask']}")
+        print(f"Label: {sample['label']}")
+        print()
