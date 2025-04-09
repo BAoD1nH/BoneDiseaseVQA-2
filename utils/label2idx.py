@@ -8,7 +8,7 @@ def build_label_mappings(json_file, save_to=None):
     for item in data:
         # Format: "diagnose, tình trạng condition"
         answer_text = f"{item['diagnose']}, tình trạng {item['condition']}"
-        unique_answers.add(answer_text.strip())
+        unique_answers.add(answer_text)
 
     sorted_answers = sorted(unique_answers)  # for consistent indexing
     label2idx = {ans: i for i, ans in enumerate(sorted_answers)}
