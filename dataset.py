@@ -54,8 +54,11 @@ class MedicalVQADataset(Dataset):
         if self.transforms:
             pixel_values = self.transforms(image)
         else:
-            px = self.feature_extractor(images=image, return_tensors='pt')
-            pixel_values = px.pixel_values.squeeze(0)
+            if self.feature_extractor is None:
+                pixel_values = None
+            else:
+                px = self.feature_extractor(images=image, return_tensors='pt')
+                pixel_values = px.pixel_values.squeeze(0)
 
         # random question
         question = random.choice(self.questions)
@@ -76,7 +79,7 @@ class MedicalVQADataset(Dataset):
 
             input_ids = text.input_ids.squeeze(0)
             attention_mask = text.attention_mask.squeeze(0)
-            
+
         answer_text = f"{sample['diagnose']}, tình trạng {sample['condition']}"
 
         # if answer_text not in self.label2idx:
