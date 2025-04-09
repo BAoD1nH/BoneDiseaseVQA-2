@@ -1,8 +1,11 @@
 import torch
 from torch.utils.data import DataLoader, random_split
-from transformers import AutoTokenizer, AutoModelForSequenceClassification, TrainingArguments, Trainer
+from transformers import AutoTokenizer, AutoModelForSequenceClassification, TrainingArguments, Trainer, logging
 from dataset import MedicalVQADataset
 import json
+
+logging.set_verbosity_info()
+
 
 with open('label_map_label2idx.json', 'r', encoding='utf-8') as f:
     label2idx = json.load(f)
@@ -12,7 +15,7 @@ tokenizer = AutoTokenizer.from_pretrained('vimednli/vihealthbert-w_mlm-ViMedNLI'
 full = MedicalVQADataset(
     data_json='dataset/cleaned_output_bonedata.json',
     questions_csv='dataset/question_bonedata.csv',
-    image_root='.',
+    image_root='/kaggle/input/bonevqa/DemoBoneData',
     tokenizer=tokenizer,
     feature_extractor=None,
     label2idx=label2idx
@@ -37,6 +40,8 @@ training_args = TrainingArguments(
     logging_strategy='steps',
     logging_steps=50,
     fp16=True,
+    report_to="none",  # không gửi log đến wandb hay tensorboard
+    disable_tqdm=False  # bật progress bar
 )
 
 def compute_metrics(p):
