@@ -49,8 +49,7 @@ class MedicalVQADataset(Dataset):
         sample = self.data[idx]
         # load image
         img_path = os.path.join(self.image_root, sample['image_url'])
-        # image = Image.open(img_path).convert('RGB')
-        image = None
+        image = Image.open(img_path).convert('RGB')
 
         if self.transforms:
             pixel_values = self.transforms(image)
