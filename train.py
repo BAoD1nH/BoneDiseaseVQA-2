@@ -23,7 +23,7 @@ with open('label_map_idx2label.json', 'r', encoding='utf-8') as f:
     idx2label = json.load(f)
 
 # dataset and dataloaders
-tokenizer = AutoTokenizer.from_pretrained(TEXT_MODEL)
+tokenizer = AutoTokenizer.from_pretrained(TEXT_MODEL, ignore_mismatched_sizes=True)
 feature_extractor = AutoFeatureExtractor.from_pretrained(VISION_MODEL)
 
 full = MedicalVQADataset(

@@ -44,7 +44,8 @@ val_ds = ImageDataset(val_ds)
 
 model = SwinForImageClassification.from_pretrained(
     'microsoft/swinv2-base-patch4-window8-256',
-    num_labels=len(label2idx)
+    num_labels=len(label2idx),
+    ignore_mismatched_sizes=True
 )
 
 training_args = TrainingArguments(

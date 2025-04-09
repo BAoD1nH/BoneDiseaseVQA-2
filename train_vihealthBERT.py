@@ -27,7 +27,8 @@ train_ds, val_ds = random_split(full, [train_size, val_size])
 # model
 model = AutoModelForSequenceClassification.from_pretrained(
     'vimednli/vihealthbert-w_mlm-ViMedNLI',
-    num_labels=len(label2idx)
+    num_labels=len(label2idx),
+    ignore_mismatched_sizes=True
 )
 
 training_args = TrainingArguments(

@@ -32,9 +32,9 @@ class MedicalVQADataset(Dataset):
                 self.questions.append(row['\ufeffQuestion'])
 
         # Print all questions
-        print("Questions:")
-        for q in self.questions:
-            print(q)
+        # print("Questions:")
+        # for q in self.questions:
+        #     print(q)
     
         self.image_root = image_root
         self.tokenizer = tokenizer
