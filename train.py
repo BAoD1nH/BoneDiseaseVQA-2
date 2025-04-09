@@ -10,9 +10,9 @@ import json
 # hyperparameters
 VISION_MODEL = 'microsoft/swinv2-base-patch4-window8-256'
 TEXT_MODEL = 'vimednli/vihealthbert-w_mlm-ViMedNLI'
-BATCH_SIZE = 32
+BATCH_SIZE = 64
 EPOCHS = 10
-LR = 5e-4
+LR = 2e-4
 PATIENCE = 3  # early stopping patience
 
 # prepare label mapping
