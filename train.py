@@ -23,12 +23,12 @@ with open('label_map_idx2label.json', 'r', encoding='utf-8') as f:
     idx2label = json.load(f)
 
 # dataset and dataloaders
-tokenizer = AutoTokenizer.from_pretrained(TEXT_MODEL, ignore_mismatched_sizes=True)
+tokenizer = AutoTokenizer.from_pretrained(TEXT_MODEL)
 feature_extractor = AutoFeatureExtractor.from_pretrained(VISION_MODEL)
 
 full = MedicalVQADataset(
-    data_json='data.json',
-    questions_csv='questions.csv',
+    data_json='dataset/cleaned_output_bonedata.json',
+    questions_csv='dataset/question_bonedata.csv',
     image_root='/kaggle/input/bonevqa/DemoBoneData',
     tokenizer=tokenizer,
     feature_extractor=feature_extractor,
