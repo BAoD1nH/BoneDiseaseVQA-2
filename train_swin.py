@@ -1,12 +1,13 @@
 import torch
 from torch.utils.data import DataLoader, random_split
-from transformers import AutoFeatureExtractor, SwinForImageClassification, TrainingArguments, Trainer, logging
+from transformers import AutoFeatureExtractor, SwinForImageClassification, TrainingArguments, Trainer, logging, AutoTokenizer
 from dataset import MedicalVQADataset
 import json
 # load label2idx from dataset
 # e.g., label2idx = {'answer1':0, 'answer2':1, ...}
 
 feature_extractor = AutoFeatureExtractor.from_pretrained('microsoft/swinv2-base-patch4-window8-256')
+tokenizer = AutoTokenizer.from_pretrained('vimednli/vihealthbert-w_mlm-ViMedNLI')
 
 logging.set_verbosity_info()
 
@@ -31,7 +32,7 @@ full = MedicalVQADataset(
     data_json='dataset/cleaned_output_bonedata.json',
     questions_csv='dataset/question_bonedata.csv',
     image_root='/kaggle/input/bonevqa/DemoBoneData',
-    tokenizer=None,
+    tokenizer=tokenizer,
     feature_extractor=feature_extractor,
     label2idx=label2idx
 )

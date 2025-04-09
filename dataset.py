@@ -60,6 +60,9 @@ class MedicalVQADataset(Dataset):
         # random question
         question = random.choice(self.questions)
 
+        
+        # 
+        
         text = self.tokenizer(
             question,
             padding='max_length',
@@ -67,6 +70,7 @@ class MedicalVQADataset(Dataset):
             max_length=128,
             return_tensors='pt'
         )
+
         input_ids = text.input_ids.squeeze(0)
         attention_mask = text.attention_mask.squeeze(0)
         # label
