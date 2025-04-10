@@ -1,0 +1,46 @@
+import os
+import torch
+import json
+from transformers import AutoTokenizer, AutoFeatureExtractor
+from model_arch import BoneDiseaseVQA
+from dataset import MedicalVQADataset
+
+# Load label mappings
+with open('../label_map_label2idx.json', 'r', encoding='utf-8') as f:
+    label2idx = json.load(f)
+
+with open('../label_map_idx2label.json', 'r', encoding='utf-8') as f:
+    idx2label = json.load(f)
+
+# Load the model
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+model = BoneDiseaseVQA(
+    vision_model_name='microsoft/swinv2-base-patch4-window8-256',
+    text_model_name='vimednli/vihealthbert-w_mlm-ViMedNLI',
+    answer_classes=list(label2idx.keys()),
+).to(device)
+
+model.load_state_dict(torch.load('../checkpoints/best_model.pt'))
+model.eval()
+
+# Load tokenizer and feature extractor
+tokenizer = AutoTokenizer.from_pretrained('vimednli/vihealthbert-w_mlm-ViMedNLI')
+feature_extractor = AutoFeatureExtractor.from_pretrained('microsoft/swinv2-base-patch4-window8-256')
+
+def infer(image_path, question):
+    # Prepare inputs
+    pixel_values = feature_extractor(images=image_path, return_tensors="pt").pixel_values.to(device)
+    inputs = tokenizer(question, return_tensors="pt", padding=True, truncation=True).to(device)
+
+    with torch.no_grad():
+        logits = model(pixel_values, inputs['input_ids'], inputs['attention_mask'])
+        preds = torch.argmax(logits, dim=1)
+        predicted_label = idx2label[str(preds.item())]
+
+    return predicted_label
+
+# Example usage
+# image_path = 'path_to_image.jpg'
+# question = 'What is the diagnosis?'
+# prediction = infer(image_path, question)
+# print(f'Predicted label: {prediction}')

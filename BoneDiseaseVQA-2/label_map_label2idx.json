@@ -1,0 +1,16 @@
+{
+    "normal": {
+        "label1": 0,
+        "label2": 1,
+        "label3": 2,
+        "label4": 3,
+        "label5": 4
+    },
+    "abnormal": {
+        "label6": 5,
+        "label7": 6,
+        "label8": 7,
+        "label9": 8,
+        "label10": 9
+    }
+}

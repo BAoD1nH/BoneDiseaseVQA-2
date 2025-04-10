@@ -12,7 +12,7 @@ from huggingface_hub import hf_hub_download
 VISION_MODEL = 'microsoft/swinv2-base-patch4-window8-256'
 TEXT_MODEL = 'vimednli/vihealthbert-w_mlm-ViMedNLI'
 
-BATCH_SIZE = 64
+BATCH_SIZE = 12
 EPOCHS = 10
 LR = 2e-4
 PATIENCE = 3  # early stopping patience
@@ -92,7 +92,7 @@ for epoch in range(EPOCHS):
     if epoch == 0:
         freeze_encoder(model)
         print("🔒 Encoders frozen.")
-    elif epoch == 3:
+    elif epoch == 1:
         unfreeze_encoder(model)
         print("🔓 Encoders unfrozen.")
 
