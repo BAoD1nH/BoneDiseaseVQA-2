@@ -4,12 +4,13 @@ import json
 from transformers import AutoTokenizer, AutoFeatureExtractor
 from model_arch import BoneDiseaseVQA
 from dataset import MedicalVQADataset
+from PIL import Image
 
 # Load label mappings
-with open('../label_map_label2idx.json', 'r', encoding='utf-8') as f:
+with open('label_map_label2idx.json', 'r', encoding='utf-8') as f:
     label2idx = json.load(f)
 
-with open('../label_map_idx2label.json', 'r', encoding='utf-8') as f:
+with open('label_map_idx2label.json', 'r', encoding='utf-8') as f:
     idx2label = json.load(f)
 
 # Load the model
@@ -20,7 +21,7 @@ model = BoneDiseaseVQA(
     answer_classes=list(label2idx.keys()),
 ).to(device)
 
-model.load_state_dict(torch.load('../checkpoints/best_model.pt'))
+model.load_state_dict(torch.load('checkpoints/best_model.pt'))
 model.eval()
 
 # Load tokenizer and feature extractor
@@ -29,7 +30,8 @@ feature_extractor = AutoFeatureExtractor.from_pretrained('microsoft/swinv2-base-
 
 def infer(image_path, question):
     # Prepare inputs
-    pixel_values = feature_extractor(images=image_path, return_tensors="pt").pixel_values.to(device)
+    image = Image.open(image_path).convert("RGB")  # Ensure the image is in RGB format
+    pixel_values = feature_extractor(images=image, return_tensors="pt").pixel_values.to(device)
     inputs = tokenizer(question, return_tensors="pt", padding=True, truncation=True).to(device)
 
     with torch.no_grad():
@@ -40,3 +42,12 @@ def infer(image_path, question):
     return predicted_label
 
 # Example usage
+
+if __name__ == "__main__":
+    # Example image path and question
+    image_path = 'dataset/img-00005-00009.jpg'  # Replace with your image path
+    question = "Bạn có thể chẩn đoán bệnh gì từ ảnh này?"  # Replace with your question
+
+    # Perform inference
+    predicted_label = infer(image_path, question)
+    print(f"Predicted label: {predicted_label}")    

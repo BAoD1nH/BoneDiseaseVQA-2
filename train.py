@@ -12,9 +12,9 @@ from huggingface_hub import hf_hub_download
 VISION_MODEL = 'microsoft/swinv2-base-patch4-window8-256'
 TEXT_MODEL = 'vimednli/vihealthbert-w_mlm-ViMedNLI'
 
-BATCH_SIZE = 32
+BATCH_SIZE = 6
 EPOCHS = 10
-LR = 1e-4
+LR = 1e-5
 PATIENCE = 3  # early stopping patience
 
 # prepare label mapping
@@ -57,7 +57,7 @@ model = BoneDiseaseVQA(
 #     print("✅ Model weights loaded from best model.")
 
 # Huggingface load weight from best model
-model_path = hf_hub_download(repo_id="Vantuk/BoneDiseaseVQA", filename="best_model.pt")
+model_path = hf_hub_download(repo_id="Vantuk/BoneDiseaseVQA", filename="best_model_8840.pt")
 model.load_state_dict(torch.load(model_path, map_location=torch.device(device)))
 
 
@@ -89,12 +89,12 @@ os.makedirs('checkpoints', exist_ok=True)
 
 for epoch in range(EPOCHS):
     # freeze for first 3 epochs
-    if epoch == 0:
-        freeze_encoder(model)
-        print("🔒 Encoders frozen.")
-    elif epoch == 3:
-        unfreeze_encoder(model)
-        print("🔓 Encoders unfrozen.")
+    # if epoch == 0:
+    #     freeze_encoder(model)
+    #     print("🔒 Encoders frozen.")
+    # elif epoch == 3:
+    #     unfreeze_encoder(model)
+    #     print("🔓 Encoders unfrozen.")
 
     model.train()
     total_loss = 0
