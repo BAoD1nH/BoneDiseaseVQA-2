@@ -20,6 +20,7 @@ full = MedicalVQADataset(
     feature_extractor=None,
     label2idx=label2idx
 )
+
 train_size = int(0.8 * len(full))
 val_size = len(full) - train_size
 train_ds, val_ds = random_split(full, [train_size, val_size])

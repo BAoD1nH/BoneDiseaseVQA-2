@@ -5,6 +5,7 @@ from transformers import AutoTokenizer, AutoFeatureExtractor
 from model_arch import BoneDiseaseVQA
 from dataset import MedicalVQADataset
 from PIL import Image
+import csv
 
 # Load label mappings
 with open('label_map_label2idx.json', 'r', encoding='utf-8') as f:
@@ -21,7 +22,7 @@ model = BoneDiseaseVQA(
     answer_classes=list(label2idx.keys()),
 ).to(device)
 
-model.load_state_dict(torch.load('checkpoints/best_model.pt'))
+model.load_state_dict(torch.load('checkpoints/best_model_9050.pt'))
 model.eval()
 
 # Load tokenizer and feature extractor
@@ -36,18 +37,39 @@ def infer(image_path, question):
 
     with torch.no_grad():
         logits = model(pixel_values, inputs['input_ids'], inputs['attention_mask'])
+        # Get the predicted class with sigmoid activation
         preds = torch.argmax(logits, dim=1)
         predicted_label = idx2label[str(preds.item())]
 
-    return predicted_label
+    return predicted_label, preds, logits
+
+
+
+# Using multiple question for one image
+def infer_multiple_questions(image_path, questions):
+    results = {}
+    for question in questions:
+        predicted_label, _,_ = infer(image_path, question)
+        results[question] = {
+            'predicted_label': predicted_label,
+        }
+    return results
 
 # Example usage
-
-if __name__ == "__main__":
+if __name__ == "__main__":  
     # Example image path and question
-    image_path = 'dataset/img-00005-00009.jpg'  # Replace with your image path
-    question = "Bạn có thể chẩn đoán bệnh gì từ ảnh này?"  # Replace with your question
+    image_path = 'dataset/img-01001-00002.jpg'  # Replace with your image path
+    questions_csv = 'dataset/question_bonedata.csv'  # Path to your questions CSV file
+    questions = []
+    with open(questions_csv, 'r', encoding='utf-8') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            questions.append(row['\ufeffQuestion'])
+    results = infer_multiple_questions(image_path, questions)
+    print(results)
+    # question = input("Nhập câu hỏi")  # Replace with your question
 
-    # Perform inference
-    predicted_label = infer(image_path, question)
-    print(f"Predicted label: {predicted_label}")    
+    # # Perform inference
+    # predicted_label,_,_  = infer(image_path, question)
+    # print(f"Predicted class: {predicted_label}")    
+

@@ -32,6 +32,7 @@ class BoneDiseaseVQA(nn.Module):
         encoder_layer = nn.TransformerEncoderLayer(
             d_model=embed_dim, nhead=num_heads, dim_feedforward=embed_dim*4
         )
+         
         self.fusion = nn.TransformerEncoder(encoder_layer, num_layers=fusion_layers)
 
         # Learnable answer embeddings (C x E)
