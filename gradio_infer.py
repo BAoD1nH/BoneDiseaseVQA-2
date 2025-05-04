@@ -4,8 +4,15 @@ import json
 from transformers import AutoTokenizer, AutoFeatureExtractor
 from model_arch import BoneDiseaseVQA
 from PIL import Image
+import openai
 
 import logging
+
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, filename="app.log", filemode="w", format="%(asctime)s - %(levelname)s - %(message)s")
@@ -48,6 +55,23 @@ def infer(image, question):
         return predicted_label
     except Exception as e:
         return f"Error during inference: {str(e)}"
+    
+def fetch_additional_info(diagnosis):
+    try:
+        prompt = f"Đóng vai trò là một bác sĩ, hãy cho tôi biết thêm thông tin về chẩn đoán sau đây: {diagnosis}"
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[{"role": "system", "content": prompt}],
+            stream=True  # Enable streaming
+        )
+        additional_info = ""
+        for chunk in response:
+            if "choices" in chunk:
+                additional_info += chunk["choices"][0]["delta"].get("content", "")
+                yield additional_info  # Stream the response incrementally
+    except Exception as e:
+        logging.error(f"Error fetching additional info: {str(e)}")
+        yield f"Error: {str(e)}"
 
 # Gradio interface
 def gradio_interface(image, question):
@@ -72,8 +96,11 @@ with gr.Blocks() as demo:
             submit_button = gr.Button("Infer")
         with gr.Column():
             output = gr.Textbox(label="Câu trả lời", interactive=False)
+            additional_info_button = gr.Button("Thêm thông tin về bệnh lý này")
+            additional_info_output = gr.Textbox(label="Thông tin thêm", interactive=False)
 
     submit_button.click(gradio_interface, inputs=[image_input, question_input], outputs=output)
+    additional_info_button.click(fetch_additional_info, inputs=output, outputs=additional_info_output)
 
 # Run the app
 if __name__ == "__main__":

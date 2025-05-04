@@ -1,6 +1,6 @@
 # BoneDiseaseVQA
 
-![Model Architecture](path/to/model_architecture_image.png)
+![Model Architecture](BoneDiseaseVQA_arch.png)
 
 BoneDiseaseVQA is a Medical Visual Question Answering (VQA) system designed to answer questions about bone disease using a combination of vision and language models. The system integrates a Swin Transformer for image encoding, ViHealthBERT for text encoding (Thanks Vietnamese reseach team for there excellent work on ViHealthBERT), and a cross-modality attention mechanism for fusion. To classified and generate the output, our team leverage the Answer-querying decoder (with a learnable answer embedding vector)
 
@@ -35,5 +35,44 @@ The model is trained on a dataset of medical images and corresponding questions,
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-repo/BoneDiseaseVQA.git
-   cd BoneDiseaseVQA
+   git clone https://github.com/Tuprott991/BoneDiseaseVQA-2
+   cd BoneDiseaseVQA-2
+   ```
+
+2. Environment installation:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. Download the pretrained models and place them in the `project root` directory:
+   - BoneDiseaseVQA weights (https://huggingface.co/Vantuk/BoneDiseaseVQA/tree/main)
+   - Swin Transformer weights
+   - ViHealthBERT weights
+
+4. Ensure the dataset is prepared and placed in the `data` directory.
+
+## Usage
+
+![Web Inference](BoneDiseaseVQA_arch.png)
+
+
+To run web inference on a sample image and question, use the following command:
+```bash
+python gradio_infer.py
+```
+
+Upload your bone X-RAY/MRI image and ask for diagnose, also user can get more information about the diagnose via GPT-4o during the inference
+
+## Training
+
+To train the model, use the following command:
+```bash
+python train.py
+```
+
+Make sure your data is configure the same as my dataset.py -> This is dataloader format
+
+
+## Acknowledgments
+
+We would like to thank the developers of Swin Transformer and ViHealthBERT for their contributions to the open-source community. Special thanks to the medical professionals who provided insights and annotations for the dataset.
