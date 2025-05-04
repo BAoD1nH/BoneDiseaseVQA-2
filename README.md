@@ -53,7 +53,7 @@ The model is trained on a dataset of medical images and corresponding questions,
 
 ## Usage
 
-![Web Inference](BoneDiseaseVQA_arch.png)
+![Web Inference](infer.png)
 
 
 To run web inference on a sample image and question, use the following command:
